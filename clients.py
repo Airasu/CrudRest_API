@@ -33,5 +33,22 @@ def create_emp():
 
 
 
+@app.route('/emp')
+def fetch():
+    try:
+        conn = mysql.connect()
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
+        cursor.execute("SELECT * FROM clients_info")
+        empRows = cursor.fetchall()
+        response = jsonify(empRows)
+        response.status_code = 200
+        return response
+    except Exception as e:
+        print(e)
+    finally:
+        cursor.close()
+        conn.close()
+
+
 if __name__ == "__main__":
     app.run()
