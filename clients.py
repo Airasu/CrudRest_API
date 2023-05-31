@@ -91,6 +91,21 @@ def update():
         cursor.close()
         conn.close()
 
+@app.route('/delete/<int:customer_id>', methods=['DELETE'])
+def delete(customer_id):
+    try:
+        conn = mysql.connect()
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM clients_info WHERE customer_id=%s", (customer_id,))
+        conn.commit()
+        response = jsonify('Client deleted successfully!')
+        response.status_code = 200
+        return response
+    except Exception as e:
+        print(e)
+    finally:
+        cursor.close()
+        conn.close()
 
 
 
