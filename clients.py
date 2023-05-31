@@ -24,7 +24,7 @@ def create():
             response.status_code = 200
             return response
         else:   
-            return jsonify('Error')
+            return jsonify("ERROR")
     except Exception as e:
         print(e)
     finally:
@@ -84,7 +84,7 @@ def update():
             response.status_code = 200
             return response
         else:
-            return jsonify('Error')
+            return jsonify("ERROR")
     except Exception as e:
         print(e)
     finally:
@@ -93,21 +93,25 @@ def update():
 
 @app.route('/delete/<int:customer_id>', methods=['DELETE'])
 def delete(customer_id):
-    try:
-        conn = mysql.connect()
-        cursor = conn.cursor()
-        cursor.execute("DELETE FROM clients_info WHERE customer_id=%s", (customer_id,))
-        conn.commit()
-        response = jsonify('Client deleted successfully!')
-        response.status_code = 200
-        return response
-    except Exception as e:
-        print(e)
-    finally:
-        cursor.close()
-        conn.close()
-
-
+        try:
+            conn = mysql.connect()
+            cur = conn.cursor(pymysql.cursors.DictCursor)
+            checker = f"SELECT * FROM clients_info WHERE EXISTS (SELECT * FROM clients_info WHERE customer_id = {customer_id})"
+            cur.execute(checker)
+            exist = cur.fetchall() 
+            if exist:
+                cur.execute("DELETE FROM clients_info WHERE customer_id =%s", (customer_id,))
+                conn.commit()
+                response = jsonify('Client deleted successfully!')
+                response.status_code = 200
+                return response
+            else:
+                return jsonify('Error: Nonexistent') 
+        except Exception as e:
+            print(e)
+        finally:
+            cur.close() 
+            conn.close()
 
 
 
