@@ -113,6 +113,15 @@ def delete(customer_id):
             cur.close() 
             conn.close()
 
+@app.errorhandler(404)
+def showMessage(error=None):
+    message = {
+        'status': 404,
+        'message': 'Record not found: ' + request.url,
+    }
+    response = jsonify(message)
+    response.status_code = 404
+    return response
 
 
 if __name__ == "__main__":
