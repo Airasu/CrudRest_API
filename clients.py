@@ -15,7 +15,7 @@ def create_emp():
         _email = _json['customer_email_address']
         if _id and _name and _number and _email and  request.method == 'POST':
             conn = mysql.connect()
-            cursor  = conn.cursor(pymysql.cursors.DictCursor)
+            cursor  = conn.cursor()
             slqQuery = "INSERT INTO clients_info (customer_id, customer_name, customer_number, customer_email_address) VALUES(%s, %s, %s, %s)"
             bindData= (_id, _name,_number, _email)
             cursor.execute(slqQuery, bindData)
@@ -65,7 +65,36 @@ def search(customer_id):
         cursor.close()
         conn.close()
 
+@app.route('/update', methods = ['PUT'])
+def update():
+    try:
+        _json = request.json
+        _id = _json['customer_id']
+        _name = _json['customer_name']
+        _number = _json['customer_number']
+        _email = _json['customer_email_address']  
+        if _id and _name and _number and _email and request.method == 'PUT':
+            sqlQuery = "UPDATE clients_info SET customer_id=%s, customer_name=%s, customer_number=%s, customer_email_address=%s WHERE customer_id=%s"
+            bindData = (_id, _name, _number, _email, _id)
+            conn = mysql.connect()
+            cursor = conn.cursor(pymysql.cursors.DictCursor)
+            cursor.execute(sqlQuery, bindData)
+            conn.commit()
+            response = jsonify('Client updated successfully!')
+            response.status_code = 200
+            return response
+        else:
+            return jsonify('Error')
+    except Exception as e:
+        print(e)
+    finally:
+        cursor.close()
+        conn.close()
+
+
+
+
 
 
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=True)
