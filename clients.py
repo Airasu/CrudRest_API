@@ -50,5 +50,22 @@ def fetch():
         conn.close()
 
 
+@app.route('/emp/<int:customer_id>')
+def search(customer_id):
+    try:
+        conn = mysql.connect()
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
+        cursor.execute("SELECT * FROM clients_info WHERE customer_id =%s", customer_id)
+        empRow = cursor.fetchone()
+        response = jsonify(empRow)
+        return response
+    except Exception as e:
+        print(e)
+    finally:
+        cursor.close()
+        conn.close()
+
+
+
 if __name__ == "__main__":
     app.run()
