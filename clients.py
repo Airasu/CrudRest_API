@@ -6,7 +6,7 @@ from flask import flash,request
 
 
 @app.route('/create', methods = ['POST'])
-def create_emp():
+def create():
     try:
         _json = request.json
         _id = _json['customer_id']
@@ -20,7 +20,7 @@ def create_emp():
             bindData= (_id, _name,_number, _email)
             cursor.execute(slqQuery, bindData)
             conn.commit()
-            response = jsonify('Employee added successfully')
+            response = jsonify('Client added successfully')
             response.status_code = 200
             return response
         else:   
@@ -33,8 +33,8 @@ def create_emp():
 
 
 
-@app.route('/emp')
-def fetch():
+@app.route('/get')
+def get():
     try:
         conn = mysql.connect()
         cursor = conn.cursor(pymysql.cursors.DictCursor)
@@ -50,7 +50,7 @@ def fetch():
         conn.close()
 
 
-@app.route('/emp/<int:customer_id>')
+@app.route('/get/<int:customer_id>')
 def search(customer_id):
     try:
         conn = mysql.connect()
