@@ -2,13 +2,11 @@ import pymysql
 from app import app
 from config import mysql
 from flask import jsonify
-from flask import flash,request
+from flask import request
 import secrets
 
 auth = secrets.token_hex(4)
 print(auth)
-
-
 
 
 @app.route('/create', methods = ['POST'])
@@ -53,7 +51,6 @@ def get():
             cursor.execute("SELECT * FROM clients_info")
             empRows = cursor.fetchall()
             response = jsonify(empRows)
-            response.status_code = 200
             return response
         except Exception as e:
             print(e)
@@ -61,7 +58,7 @@ def get():
             cursor.close()
             conn.close()
     else:
-        return jsonify({'ERROR': 'Invalid Token'}), 401
+            return jsonify({'ERROR': 'Invalid Token'}), 401
 
 
 
