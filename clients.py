@@ -56,14 +56,15 @@ def search(customer_id):
         conn = mysql.connect()
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("SELECT * FROM clients_info WHERE customer_id =%s", customer_id)
-        empRow = cursor.fetchone()
-        response = jsonify(empRow)
-        return response
+        empRow = cursor.fetchall()
+        if empRow:
+            return jsonify(empRow), 200
+        else:
+            return jsonify({'ERROR': 'No clients found.'}), 404
     except Exception as e:
         print(e)
-    finally:
-        cursor.close()
-        conn.close()
+        return jsonify({'ERROR': 'An error occurred while retrieving clients.'}), 500
+
 
 @app.route('/update', methods = ['PUT'])
 def update():
@@ -122,7 +123,6 @@ def showMessage(error=None):
     response = jsonify(message)
     response.status_code = 404
     return response
-
 
 if __name__ == "__main__":
     app.run(debug=True)
