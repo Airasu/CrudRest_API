@@ -1,0 +1,76 @@
+Documentation for clients.py
+
+Import Statements:
+
+import pymysql: Imports the pymysql library for connecting to the MySQL database.
+from app import app: Imports the app variable from the app module.
+from config import mysql: Imports the mysql variable from the config module.
+from flask import jsonify, request: Imports the jsonify and request functions from the Flask framework.
+import secrets: Imports the secrets module for generating authentication tokens.
+
+Authentication Token Generation:
+auth = secrets.token_hex(4): Generates a random hexadecimal authentication token of 4 bytes using the secrets module.
+print(auth): Prints the generated authentication token. This line can be removed or commented out in a production environment.
+
+Route: /create
+Method: POST
+Description: This route is used to add a new client to the clients_info table in the database.
+Authentication: Requires a valid token in the Authorization header to access this route.
+Request Body: Expects a JSON object with the following properties: customer_id, customer_name, customer_number, customer_email_address.
+If all the required fields are present and the request method is POST, the code establishes a connection to the MySQL database, retrieves the data from the request JSON, and inserts it into the clients_info table using an SQL INSERT statement.
+
+Returns:
+Status code 200 and a JSON response with the message "Client added successfully" upon successful addition.
+Status code 401 and a JSON response with the message "Invalid Token" if authentication fails.
+Status code 400 and a JSON response with the message "ERROR" if any of the required fields are missing.
+
+Route: /get
+Method: GET
+Description: This route retrieves all clients from the clients_info table in the database.
+Authentication: Requires a valid token in the Authorization header to access this route.
+The code establishes a connection to the MySQL database, executes an SQL SELECT statement to fetch all rows from the clients_info table, and returns the result as a JSON response.
+
+Returns:
+Status code 200 and a JSON response with the array of clients retrieved from the database.
+Status code 401 and a JSON response with the message "Invalid Token" if authentication fails.
+
+Route: /get/<int:customer_id>
+Method: GET
+Description: This route retrieves a specific client from the clients_info table based on the provided customer_id.
+Authentication: Requires a valid token in the Authorization header to access this route.
+The code establishes a connection to the MySQL database, executes an SQL SELECT statement with a WHERE clause to fetch the client with the specified customer_id, and returns the result as a JSON response.
+
+Returns:
+Status code 200 and a JSON response with the client data if the client is found.
+Status code 404 and a JSON response with the message "No clients found" if the client is not found.
+Status code 401 and a JSON response with the message "Invalid Token" if authentication fails.
+
+Route: /update
+Method: PUT
+Description: This route updates a client in the clients_info table based on the provided customer_id.
+Authentication: Requires a valid token in the Authorization header to access this route.
+Request Body: Expects a JSON object with the following properties: customer_id, customer_name, customer_number, customer_email_address.
+If all the required fields are present and the request method is PUT, the code establishes a connection to the MySQL database, retrieves the data from the request JSON, and updates the corresponding row in the clients_info table using an SQL UPDATE statement.
+
+Returns:
+Status code 200 and a JSON response with the message "Client updated successfully" upon successful update.
+Status code 401 and a JSON response with the message "Invalid Token" if authentication fails.
+Status code 400 and a JSON response with the message "ERROR" if any of the required fields are missing.
+
+Route: /delete/<int:customer_id>
+Method: DELETE
+Description: This route deletes a client from the clients_info table based on the provided customer_id.
+Authentication: Requires a valid token in the Authorization header to access this route.
+If the client with the specified customer_id exists in the clients_info table, the code establishes a connection to the MySQL database and deletes the corresponding row using an SQL DELETE statement.
+
+Returns:
+Status code 200 and a JSON response with the message "Client deleted successfully" upon successful deletion.
+Status code 404 and a JSON response with the message "Error: Nonexistent" if the client does not exist.
+Status code 401 and a JSON response with the message "Invalid Token" if authentication fails.
+Error Handler: @app.errorhandler(404)
+
+Description: This function handles 404 (Not Found) errors.
+Returns:
+Status code 404 and a JSON response with the message "Record not found" and the requested URL.
+Execution: if __name__ == "__main__":
+The code block under this condition runs the Flask application when the script is directly executed.
