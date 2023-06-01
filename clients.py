@@ -3,6 +3,12 @@ from app import app
 from config import mysql
 from flask import jsonify
 from flask import flash,request
+import secrets
+
+auth = secrets.token_hex(4)
+print(auth)
+
+
 
 
 @app.route('/create', methods = ['POST'])
@@ -52,18 +58,22 @@ def get():
 
 @app.route('/get/<int:customer_id>')
 def search(customer_id):
-    try:
-        conn = mysql.connect()
-        cursor = conn.cursor(pymysql.cursors.DictCursor)
-        cursor.execute("SELECT * FROM clients_info WHERE customer_id =%s", customer_id)
-        empRow = cursor.fetchall()
-        if empRow:
-            return jsonify(empRow), 200
-        else:
-            return jsonify({'ERROR': 'No clients found.'}), 404
-    except Exception as e:
-        print(e)
-        return jsonify({'ERROR': 'An error occurred while retrieving clients.'}), 500
+    token = request.headers.get('Authorization')
+    if token == auth: 
+        try:
+            conn = mysql.connect()
+            cursor = conn.cursor(pymysql.cursors.DictCursor)
+            cursor.execute("SELECT * FROM clients_info WHERE customer_id =%s", customer_id)
+            empRow = cursor.fetchall()
+            if empRow:
+                return jsonify(empRow), 200
+            else:
+                return jsonify({'ERROR': 'No clients found.'}), 404
+        except Exception as e:
+            print(e)
+            return jsonify({'ERROR': 'An error occurred while retrieving clients.'}), 500
+    else:
+        return jsonify({'ERROR': 'Invalid Token'}), 401
 
 
 @app.route('/update', methods = ['PUT'])
